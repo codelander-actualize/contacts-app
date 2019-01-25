@@ -2,6 +2,12 @@ class Api::ContactsController < ApplicationController
 
 	def index
     @contacts = Contact.all
+
+    search_term = params[:search]
+    if search_term
+      @contacts = @contacts.where("first_name ILIKE ? OR last_name ILIKE ? OR email ILIKE ? OR middle_name ILIKE ?", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%")
+    end
+
     render 'index.json.jbuilder'
   end
 
@@ -18,8 +24,11 @@ class Api::ContactsController < ApplicationController
       @contact.middle_name = params[:middle_name]
     end
 
-    @contact.save
-    render 'show.json.jbuilder'
+    if @contact.save
+      render 'show.json.jbuilder'
+    else
+      render json: {errors: @contact.errors.full_messages}, status: :unprocessable_entity
+    end
   end
 
   def show
@@ -37,8 +46,11 @@ class Api::ContactsController < ApplicationController
     @contact.phone_number = params[:phone_number] || @contact.phone_number
     @contact.bio = params[:bio] || @contact.bio
 
-    @contact.save
-    render 'show.json.jbuilder'
+    if @contact.save
+      render 'show.json.jbuilder'
+    else
+      render json: {errors: @contact.errors.full_messages}, status: :unprocessable_entity
+    end
   end
 
   def destroy
