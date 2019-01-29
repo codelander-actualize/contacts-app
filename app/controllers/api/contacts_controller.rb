@@ -1,14 +1,18 @@
 class Api::ContactsController < ApplicationController
 
+  before_action :authenticate_user #checking to see if a user is logged in before doing any of the actions in this controller
+
 	def index
-    @contacts = Contact.all
+    # @contacts = Contact.all
 
-    search_term = params[:search]
-    if search_term
-      @contacts = @contacts.where("first_name ILIKE ? OR last_name ILIKE ? OR email ILIKE ? OR middle_name ILIKE ?", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%")
-    end
+    # search_term = params[:search]
+    # if search_term
+    #   @contacts = @contacts.where("first_name ILIKE ? OR last_name ILIKE ? OR email ILIKE ? OR middle_name ILIKE ?", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%")
+    # end
 
-    render 'index.json.jbuilder'
+    # render 'index.json.jbuilder'
+    @contacts = current_user.contacts
+    render "index.json.jbuilder"
   end
 
   def create
@@ -17,7 +21,8 @@ class Api::ContactsController < ApplicationController
     	last_name: params[:last_name],
     	email: params[:email],
     	phone_number: params[:phone_number],
-      bio: params[:bio]
+      bio: params[:bio],
+      user_id: current_user.id
     )
 
     if params[:middle_name]
