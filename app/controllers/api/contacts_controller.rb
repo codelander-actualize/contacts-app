@@ -1,6 +1,6 @@
 class Api::ContactsController < ApplicationController
 
-  before_action :authenticate_user #checking to see if a user is logged in before doing any of the actions in this controller
+  # before_action :authenticate_user #checking to see if a user is logged in before doing any of the actions in this controller
 
 	def index
     # @contacts = Contact.all
@@ -10,8 +10,13 @@ class Api::ContactsController < ApplicationController
     #   @contacts = @contacts.where("first_name ILIKE ? OR last_name ILIKE ? OR email ILIKE ? OR middle_name ILIKE ?", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%", "%#{search_term}%")
     # end
 
-    # render 'index.json.jbuilder'
     @contacts = current_user.contacts
+
+    if params[:group]
+      group = Group.find_by(name: params[:group])
+      @contacts = group.contacts #how do we get current users contacts in a specific group?
+    end
+
     render "index.json.jbuilder"
   end
 

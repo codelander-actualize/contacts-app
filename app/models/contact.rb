@@ -1,5 +1,7 @@
 class Contact < ApplicationRecord
 
+	has_many :contact_groups
+	has_many :groups, through: :contact_groups
 	belongs_to :user
 
 	validates :first_name, :last_name, :email, presence: true
@@ -16,6 +18,10 @@ class Contact < ApplicationRecord
 
 	def japan_phone_number
 		"+81 #{phone_number}"
+	end
+
+	def group_names
+		groups.map { |group| group.name }
 	end
 
 end
